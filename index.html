@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedInsight — HCP Clinical Portal</title>
+
+<!-- ╔══════════════════════════════════════════════════════════╗
+     ║  INSTRUCTIONS: Replace GTM-XXXXXXX with YOUR GTM ID    ║
+     ║  in BOTH places (head snippet + body noscript)          ║
+     ╚══════════════════════════════════════════════════════════╝ -->
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>
+<!-- End Google Tag Manager -->
+
+<script>window.dataLayer = window.dataLayer || [];</script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#050a14;--surface:#0c1424;--card:#111c30;--card-hover:#162340;
+  --border:#1a2a45;--border-hover:#2a3a5a;
+  --accent:#00c2e0;--accent-dim:#0090a8;--accent-glow:rgba(0,194,224,0.12);
+  --green:#34d399;--green-dim:rgba(52,211,153,0.12);
+  --amber:#f59e0b;--amber-dim:rgba(245,158,11,0.12);
+  --rose:#f43f5e;--rose-dim:rgba(244,63,94,0.12);
+  --violet:#a78bfa;--violet-dim:rgba(167,139,250,0.12);
+  --text:#e4e0d8;--text-sec:#8898b0;--text-dim:#4a5a72;
+  --radius:10px;
+}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+h1,h2,h3{font-family:'Playfair Display',serif;font-weight:600}
+
+/* ── NAV ── */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;backdrop-filter:blur(12px)}
+.topbar-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:54px}
+.logo{display:flex;align-items:center;gap:8px;cursor:pointer}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--accent),#0070a0);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:#fff}
+.logo span{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text)}
+.nav-tabs{display:flex;gap:2px}
+.nav-tab{padding:7px 14px;border-radius:7px;font-size:12.5px;font-weight:500;color:var(--text-sec);cursor:pointer;transition:all .2s;border:none;background:none}
+.nav-tab:hover{color:var(--accent);background:var(--accent-glow)}
+.nav-tab.on{color:var(--accent);background:var(--accent-glow)}
+.nav-right{display:flex;align-items:center;gap:8px}
+.user-badge{font-size:11px;color:var(--green);font-weight:600;display:none}
+.btn{padding:6px 14px;border-radius:6px;font-size:11.5px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-accent{background:var(--accent);color:#fff}.btn-accent:hover{background:var(--accent-dim)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-sec)}.btn-ghost:hover{border-color:var(--accent);color:var(--accent)}
+.btn-rose{background:var(--rose);color:#fff;display:none}
+.btn-lg{padding:10px 22px;font-size:13px;border-radius:8px}
+
+/* ── LAYOUT ── */
+.page{display:none;max-width:1100px;margin:0 auto;padding:28px 20px 280px}
+.page.on{display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:768px){.grid2,.grid3{grid-template-columns:1fr}.nav-tabs{display:none}}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(145deg,var(--card),var(--surface));border:1px solid var(--border);border-radius:14px;padding:48px 36px;margin-bottom:28px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,var(--accent-glow),transparent);pointer-events:none}
+.hero h1{font-size:30px;font-weight:700;line-height:1.25;margin-bottom:8px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p{color:var(--text-sec);font-size:14px;max-width:520px}
+.hero-stats{display:flex;gap:32px;margin-top:20px}
+.hero-stat .num{font-size:26px;font-weight:700;font-family:'Playfair Display',serif;color:var(--accent)}
+.hero-stat .lbl{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;cursor:pointer;transition:all .25s}
+.card:hover{border-color:var(--accent);background:var(--card-hover);transform:translateY(-2px)}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.t-onc{background:var(--rose-dim);color:var(--rose)}.t-imm{background:var(--green-dim);color:var(--green)}
+.t-card{background:rgba(0,194,224,.1);color:var(--accent)}.t-neur{background:var(--violet-dim);color:var(--violet)}
+.t-gen{background:var(--amber-dim);color:var(--amber)}
+.card h3{font-family:'Inter',sans-serif;font-size:14px;font-weight:600;margin-bottom:5px}
+.card p{color:var(--text-sec);font-size:12px;line-height:1.65}
+.card-meta{display:flex;gap:12px;margin-top:10px;font-size:10px;color:var(--text-dim)}
+.card-meta span{display:flex;align-items:center;gap:3px}
+
+.section-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text-dim);font-weight:700;margin-bottom:14px}
+
+/* ── FORM ── */
+.form-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px;max-width:480px}
+.form-wrap.wide{max-width:560px}
+.form-wrap h2{font-size:20px;margin-bottom:4px}
+.form-wrap .sub{color:var(--text-sec);font-size:12px;margin-bottom:18px}
+.fg{margin-bottom:14px}
+.fg label{display:block;font-size:11px;color:var(--text-sec);margin-bottom:5px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.fg input,.fg select,.fg textarea{width:100%;padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;font-family:inherit;outline:none;transition:border .2s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
+.fg textarea{height:72px;resize:vertical}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+/* ── DETAIL ── */
+.detail-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:32px}
+.detail-wrap h2{font-size:22px;margin-bottom:10px}
+.detail-wrap p{color:var(--text-sec);font-size:13.5px;line-height:1.8;margin-bottom:14px}
+.back-link{color:var(--accent);font-size:12px;cursor:pointer;margin-bottom:14px;display:inline-block;font-weight:500}
+.action-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+
+/* ── SEARCH ── */
+.search-bar{display:flex;gap:8px;margin-bottom:24px}
+.search-bar input{flex:1;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none}
+.search-bar input:focus{border-color:var(--accent)}
+
+/* ── VIDEO ── */
+.video-player{background:#000;border-radius:10px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;margin-bottom:16px;border:1px solid var(--border)}
+.video-player .play-icon{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);transition:all .3s}
+.video-player:hover .play-icon{background:var(--accent);transform:scale(1.1)}
+.play-icon::after{content:'';width:0;height:0;border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:3px}
+.video-progress{height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:8px}
+.video-progress-fill{height:100%;background:var(--accent);width:0%;transition:width .3s}
+.video-time{font-size:11px;color:var(--text-dim);margin-top:4px}
+
+/* ── TABS ── */
+.tab-row{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);padding-bottom:1px}
+.tab-btn{padding:8px 16px;font-size:12px;font-weight:600;color:var(--text-dim);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s}
+.tab-btn.on{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── CALC ── */
+.calc-out{background:var(--surface);border:1px solid var(--accent);border-radius:8px;padding:16px;text-align:center;margin-top:14px;display:none}
+.calc-out .dose{font-size:28px;font-weight:700;color:var(--accent);font-family:'Playfair Display',serif}
+.calc-out .dose-label{font-size:11px;color:var(--text-dim);margin-top:2px;text-transform:uppercase;letter-spacing:1px}
+
+/* ── MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center}
+.overlay.on{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:32px;width:380px;position:relative}
+.modal h2{font-size:18px;margin-bottom:14px}
+.modal-x{position:absolute;top:10px;right:14px;background:none;border:none;color:var(--text-dim);font-size:18px;cursor:pointer}
+
+/* ── TOAST ── */
+.toast{display:none;position:fixed;top:66px;right:20px;background:var(--green);color:var(--bg);padding:10px 18px;border-radius:8px;font-size:12px;font-weight:600;z-index:300;box-shadow:0 8px 24px rgba(52,211,153,.25)}
+.toast.on{display:block;animation:fadeSlide .3s ease}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── DEBUG ── */
+#dbg{position:fixed;bottom:0;left:0;right:0;background:#060a12;border-top:2px solid var(--accent);max-height:220px;overflow-y:auto;z-index:9999;font-family:'Courier New',monospace;font-size:10.5px;padding:6px 10px}
+#dbg.hide{max-height:28px;overflow:hidden}
+#dbg-toggle{position:fixed;bottom:224px;right:14px;background:var(--accent);color:#fff;border:none;padding:3px 10px;border-radius:4px 4px 0 0;cursor:pointer;font-size:10px;font-weight:700;z-index:10000;font-family:'Courier New',monospace}
+#dbg.hide~#dbg-toggle{bottom:32px}
+.de{padding:2px 0;border-bottom:1px solid #111828}.dt{color:var(--text-dim)}.dn{color:var(--amber);font-weight:700}.dd{color:var(--accent)}
+.event-badge{display:inline-block;padding:1px 5px;border-radius:3px;font-size:9px;margin-left:4px}
+.eb-engage{background:var(--green-dim);color:var(--green)}
+.eb-profile{background:var(--violet-dim);color:var(--violet)}
+.eb-ecomm{background:var(--amber-dim);color:var(--amber)}
+</style>
+</head>
+<body>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════ NAVIGATION ═══════════ -->
+<div class="topbar"><div class="topbar-inner">
+  <div class="logo" onclick="go('home')"><div class="logo-mark">M</div><span>MedInsight</span></div>
+  <div class="nav-tabs" id="nav-tabs">
+    <button class="nav-tab on" onclick="go('home')">Home</button>
+    <button class="nav-tab" onclick="go('library')">Resource Library</button>
+    <button class="nav-tab" onclick="go('videos')">Video Hub</button>
+    <button class="nav-tab" onclick="go('tools')">Clinical Tools</button>
+    <button class="nav-tab" onclick="go('events')">Events</button>
+    <button class="nav-tab" onclick="go('contact')">Contact Rep</button>
+  </div>
+  <div class="nav-right">
+    <span class="user-badge" id="ubadge"></span>
+    <button class="btn btn-accent" id="btnLogin" onclick="showModal('login')">HCP Sign In</button>
+    <button class="btn btn-rose" id="btnLogout" onclick="doLogout()">Sign Out</button>
+  </div>
+</div></div>
+
+<!-- ═══════════ HOME ═══════════ -->
+<div class="page on" id="p-home">
+  <div class="hero">
+    <h1>Clinical Intelligence,<br><em>Delivered.</em></h1>
+    <p>Access evidence-based resources, interactive tools, and expert insights — tailored to your specialty and practice.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">2,400+</div><div class="lbl">Clinical Articles</div></div>
+      <div class="hero-stat"><div class="num">180</div><div class="lbl">Video Lectures</div></div>
+      <div class="hero-stat"><div class="num">12</div><div class="lbl">Therapeutic Areas</div></div>
+    </div>
+  </div>
+
+  <div class="section-label">Trending This Week</div>
+  <div class="grid3">
+    <div class="card" onclick="viewItem('biktarvy-adherence','Biktarvy Adherence Insights','Immunology')"><span class="tag t-imm">Immunology</span><h3>Biktarvy Adherence & Real-World Outcomes</h3><p>New data on treatment persistence rates and virologic suppression at 96 weeks in clinical practice.</p><div class="card-meta"><span>📄 Article</span><span>8 min read</span><span>Jun 2026</span></div></div>
+    <div class="card" onclick="viewItem('trodelvy-tnbc','Trodelvy in mTNBC','Oncology')"><span class="tag t-onc">Oncology</span><h3>Trodelvy in Metastatic TNBC: Updated OS</h3><p>Long-term overall survival analysis from the ASCENT trial with subgroup breakdown by prior therapies.</p><div class="card-meta"><span>📄 Article</span><span>12 min read</span><span>May 2026</span></div></div>
+    <div class="card" onclick="viewItem('veklury-dosing','Veklury Dosing Update','General')"><span class="tag t-gen">General</span><h3>Veklury Updated Dosing Recommendations</h3><p>Revised dosing guidance for outpatient and inpatient settings including renal adjustment protocols.</p><div class="card-meta"><span>📋 Guidelines</span><span>5 min read</span><span>Jul 2026</span></div></div>
+  </div>
+
+  <div class="section-label" style="margin-top:28px">Quick Access</div>
+  <div class="grid2">
+    <div class="card" onclick="go('tools')"><h3>🧮 Dosing Calculator</h3><p>Weight-based dosing with renal/hepatic adjustments for key therapeutics.</p></div>
+    <div class="card" onclick="go('events')"><h3>📅 Upcoming Events</h3><p>Speaker programs, webinars, and medical education sessions near you.</p></div>
+    <div class="card" onclick="go('videos')"><h3>🎬 MOA Videos</h3><p>Mechanism of action animations and expert discussions.</p></div>
+    <div class="card" onclick="showModal('register')"><h3>📝 Register for Updates</h3><p>Get personalized alerts when new content matches your specialty.</p></div>
+  </div>
+</div>
+
+<!-- ═══════════ RESOURCE LIBRARY ═══════════ -->
+<div class="page" id="p-library">
+  <div class="section-label">Resource Library</div>
+  <div class="search-bar">
+    <input type="text" id="lib-search" placeholder="Search resources by keyword, drug name, or therapeutic area..." onkeyup="doSearch(event)">
+    <button class="btn btn-accent" onclick="doSearch()">Search</button>
+  </div>
+  <div class="tab-row">
+    <button class="tab-btn on" onclick="filterLib('all',this)">All</button>
+    <button class="tab-btn" onclick="filterLib('oncology',this)">Oncology</button>
+    <button class="tab-btn" onclick="filterLib('immunology',this)">Immunology</button>
+    <button class="tab-btn" onclick="filterLib('cardiology',this)">Cardiology</button>
+    <button class="tab-btn" onclick="filterLib('neurology',this)">Neurology</button>
+  </div>
+  <div class="grid2" id="lib-grid">
+    <div class="card lib-card" data-cat="oncology" onclick="viewItem('yescarta-cart','Yescarta CAR-T Outcomes','Oncology')"><span class="tag t-onc">Oncology</span><h3>Yescarta CAR-T Long-Term Outcomes</h3><p>5-year follow-up data on complete response rates in relapsed/refractory DLBCL.</p><div class="card-meta"><span>📄 Study</span><span>15 min</span></div></div>
+    <div class="card lib-card" data-cat="immunology" onclick="viewItem('hiv-prep','HIV PrEP Guidelines 2026','Immunology')"><span class="tag t-imm">Immunology</span><h3>HIV PrEP Prescribing Guidelines 2026</h3><p>Updated recommendations for oral and injectable PrEP regimens with monitoring protocols.</p><div class="card-meta"><span>📋 Guidelines</span><span>10 min</span></div></div>
+    <div class="card lib-card" data-cat="cardiology" onclick="viewItem('heart-biomark','Cardiac Biomarker Panel','Cardiology')"><span class="tag t-card">Cardiology</span><h3>Next-Gen Cardiac Biomarker Panel</h3><p>hs-cTnI, NT-proBNP, and galectin-3 interpretation for risk stratification in HFpEF.</p><div class="card-meta"><span>📄 Review</span><span>8 min</span></div></div>
+    <div class="card lib-card" data-cat="neurology" onclick="viewItem('ms-treatments','MS Treatment Landscape','Neurology')"><span class="tag t-neur">Neurology</span><h3>Multiple Sclerosis Treatment Landscape</h3><p>Comparative efficacy of anti-CD20 therapies vs S1P modulators in RRMS.</p><div class="card-meta"><span>📄 Review</span><span>14 min</span></div></div>
+    <div class="card lib-card" data-cat="oncology" onclick="dlFile('trodelvy-pi')"><span class="tag t-onc">Oncology • Download</span><h3>Trodelvy Full Prescribing Information</h3><p>Complete PI including black box warnings, dosing, and adverse reactions.</p><div class="card-meta"><span>📥 PDF</span><span>32 pages</span></div></div>
+    <div class="card lib-card" data-cat="immunology" onclick="dlFile('biktarvy-pi')"><span class="tag t-imm">Immunology • Download</span><h3>Biktarvy Prescribing Information</h3><p>Full prescribing information with drug interaction tables and renal dosing.</p><div class="card-meta"><span>📥 PDF</span><span>28 pages</span></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ VIDEO HUB ═══════════ -->
+<div class="page" id="p-videos">
+  <div class="section-label">Video Hub</div>
+  <div class="grid2">
+    <div>
+      <div class="video-player" id="vid1" onclick="playVideo('moa-biktarvy','Biktarvy MOA Animation','Immunology',195)">
+        <div class="play-icon"></div>
+      </div>
+      <h3 style="font-family:Inter;font-size:14px;margin-bottom:2px">Biktarvy Mechanism of Action</h3>
+      <p style="color:var(--text-sec);font-size:11px">3:15 · Immunology · 12K views</p>
+      <div class="video-progress" id="vp1"><div class="video-progress-fill" id="vpf1"></div></div>
+      <div class="video-time" id="vt1"></div>
+    </div>
+    <div>
+      <div class="video-player" id="vid2" onclick="playVideo('moa-trodelvy','Trodelvy MOA — ADC Technology','Oncology',240)">
+        <div class="play-icon"></div>
+      </div>
+      <h3 style="font-family:Inter;font-size:14px;margin-bottom:2px">Trodelvy: Antibody-Drug Conjugate Technology</h3>
+      <p style="color:var(--text-sec);font-size:11px">4:00 · Oncology · 8.5K views</p>
+      <div class="video-progress" id="vp2"><div class="video-progress-fill" id="vpf2"></div></div>
+      <div class="video-time" id="vt2"></div>
+    </div>
+  </div>
+  <div class="section-label" style="margin-top:24px">Featured Lectures</div>
+  <div class="grid3">
+    <div class="card" onclick="playVideo('lecture-cart','CAR-T in Practice','Oncology',1800)"><span class="tag t-onc">Oncology</span><h3>CAR-T Cell Therapy in Clinical Practice</h3><p>Dr. Chen discusses patient selection, manufacturing, and toxicity management.</p><div class="card-meta"><span>🎬 30 min</span></div></div>
+    <div class="card" onclick="playVideo('lecture-hiv','HIV Cure Research Update','Immunology',2400)"><span class="tag t-imm">Immunology</span><h3>HIV Cure Research: 2026 Update</h3><p>Latest advances in functional cure strategies and elite controller studies.</p><div class="card-meta"><span>🎬 40 min</span></div></div>
+    <div class="card" onclick="playVideo('lecture-af','Managing AFib','Cardiology',1200)"><span class="tag t-card">Cardiology</span><h3>AFib Management: Beyond Anticoagulation</h3><p>Rate vs rhythm control strategies with real-world evidence from EAST-AFNET 4.</p><div class="card-meta"><span>🎬 20 min</span></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ CLINICAL TOOLS ═══════════ -->
+<div class="page" id="p-tools">
+  <div class="section-label">Clinical Tools</div>
+  <div class="grid2">
+    <div class="form-wrap wide">
+      <h2>Dosing Calculator</h2>
+      <p class="sub">Weight-based dosing with renal adjustments. Tracked as <strong>tool_usage</strong> event.</p>
+      <div class="fg-row"><div class="fg"><label>Drug</label><select id="c-drug" onchange="trackField('drug_selection')"><option value="">Select</option><option value="trodelvy">Trodelvy (sacituzumab govitecan)</option><option value="yescarta">Yescarta (axicabtagene ciloleucel)</option><option value="biktarvy">Biktarvy (BIC/FTC/TAF)</option><option value="veklury">Veklury (remdesivir)</option></select></div><div class="fg"><label>Indication</label><select id="c-ind" onchange="trackField('indication_selection')"><option value="">Select</option><option>mTNBC</option><option>DLBCL</option><option>HIV-1</option><option>COVID-19</option></select></div></div>
+      <div class="fg-row"><div class="fg"><label>Patient Weight (kg)</label><input type="number" id="c-wt" placeholder="70"></div><div class="fg"><label>CrCl (mL/min)</label><select id="c-renal"><option value="normal">≥90 Normal</option><option value="mild">60-89 Mild</option><option value="moderate">30-59 Moderate</option><option value="severe">&lt;30 Severe</option></select></div></div>
+      <div class="fg"><label>Hepatic Function</label><select id="c-hepatic"><option>Normal</option><option>Child-Pugh A</option><option>Child-Pugh B</option><option>Child-Pugh C</option></select></div>
+      <button class="btn btn-accent btn-lg" style="width:100%" onclick="calcDose()">Calculate Dose</button>
+      <div class="calc-out" id="calc-out"><div class="dose" id="calc-dose">—</div><div class="dose-label" id="calc-lbl">Recommended dose</div></div>
+    </div>
+    <div>
+      <div class="card" onclick="go('library')"><h3>📋 Drug Interaction Checker</h3><p>Check potential interactions between your patient's current medications and new prescriptions.</p></div>
+      <div class="card" style="margin-top:14px" onclick="dlFile('renal-dosing-guide')"><h3>📥 Renal Dosing Quick Reference</h3><p>Download the pocket guide with CrCl-based dose adjustments for 50+ medications.</p></div>
+      <div class="card" style="margin-top:14px" onclick="sharePage('clinical-tools')"><h3>📤 Share With Colleague</h3><p>Send the Clinical Tools page to a colleague via email.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ EVENTS ═══════════ -->
+<div class="page" id="p-events">
+  <div class="section-label">Upcoming Medical Events</div>
+  <div class="grid2">
+    <div class="card" onclick="registerEvent('webinar-precision-onc','Precision Oncology Symposium')"><span class="tag t-onc">Webinar • Sep 15, 2026</span><h3>Precision Oncology: Biomarker-Driven Treatment</h3><p>Expert panel on NGS-guided therapy selection in NSCLC and breast cancer.</p><div class="card-meta"><span>🕐 2:00 PM ET</span><span>CME: 1.5 credits</span></div></div>
+    <div class="card" onclick="registerEvent('dinner-hiv','HIV Treatment Dinner')"><span class="tag t-imm">Dinner Program • Sep 22, 2026</span><h3>Simplifying HIV Treatment Initiation</h3><p>Local speaker dinner program with case-based discussion on rapid ART initiation.</p><div class="card-meta"><span>🕐 6:30 PM local</span><span>Dinner provided</span></div></div>
+    <div class="card" onclick="registerEvent('virtual-cardio','Cardiology Grand Rounds')"><span class="tag t-card">Virtual • Oct 3, 2026</span><h3>Heart Failure: From Guidelines to Practice</h3><p>Translating GDMT optimization strategies into your daily clinical workflow.</p><div class="card-meta"><span>🕐 12:00 PM ET</span><span>CME: 1.0 credit</span></div></div>
+    <div class="card" onclick="registerEvent('congress-asco','ASCO Annual Meeting Highlights')"><span class="tag t-onc">On-Demand • Available Now</span><h3>ASCO 2026: Key Abstracts in GI Oncology</h3><p>Curated summary of practice-changing presentations from the annual meeting.</p><div class="card-meta"><span>🕐 Self-paced</span><span>CME: 2.0 credits</span></div></div>
+  </div>
+</div>
+
+<!-- ═══════════ CONTACT REP ═══════════ -->
+<div class="page" id="p-contact">
+  <div class="section-label">Request a Representative Visit</div>
+  <div class="form-wrap wide" style="margin:0 auto">
+    <h2>Schedule a Visit</h2>
+    <p class="sub">Form submission fires a <strong>generate_lead</strong> event with all fields to the data layer.</p>
+    <div class="fg-row"><div class="fg"><label>First Name</label><input id="f-fn" placeholder="Sarah"></div><div class="fg"><label>Last Name</label><input id="f-ln" placeholder="Smith"></div></div>
+    <div class="fg"><label>Email Address</label><input type="email" id="f-email" placeholder="dr.smith@hospital.com"></div>
+    <div class="fg-row"><div class="fg"><label>NPI Number</label><input id="f-npi" placeholder="1234567890"></div><div class="fg"><label>Phone</label><input id="f-phone" placeholder="+1-555-0100"></div></div>
+    <div class="fg"><label>Specialty</label><select id="f-spec"><option value="">Select specialty</option><option>Oncology</option><option>Immunology / HIV</option><option>Cardiology</option><option>Neurology</option><option>Primary Care</option><option>Gastroenterology</option></select></div>
+    <div class="fg"><label>Topic of Interest</label><select id="f-topic"><option value="">Select topic</option><option>Product Clinical Data</option><option>Dosing & Administration</option><option>Sample Request</option><option>Speaker Program Inquiry</option><option>Clinical Trial Enrollment</option><option>Formulary Support</option></select></div>
+    <div class="fg"><label>Preferred Contact Method</label><select id="f-method"><option>Email</option><option>Phone</option><option>In-Person Visit</option></select></div>
+    <div class="fg"><label>Additional Notes</label><textarea id="f-notes" placeholder="Any specific questions or preferred dates..."></textarea></div>
+    <button class="btn btn-accent btn-lg" style="width:100%" onclick="submitContact()">Submit Request</button>
+  </div>
+</div>
+
+<!-- ═══════════ DETAIL PAGE ═══════════ -->
+<div class="page" id="p-detail">
+  <span class="back-link" onclick="history.back();go(lastPage||'home')">← Back</span>
+  <div class="detail-wrap">
+    <span class="tag" id="d-tag">Category</span>
+    <h2 id="d-title">Resource Title</h2>
+    <p id="d-body">Content preview. In a production environment, this would contain clinical data, trial results, or educational material.</p>
+    <p>This page view generates a <strong>view_item</strong> event capturing the content ID, category, title, and your user identity (if logged in) — all flowing to your Data 360 Engagement DMO.</p>
+    <div class="action-row">
+      <button class="btn btn-accent" onclick="dlFile(currentItem)">📥 Download PDF</button>
+      <button class="btn btn-ghost" onclick="saveItem(currentItem)">🔖 Save for Later</button>
+      <button class="btn btn-ghost" onclick="sharePage(currentItem)">📤 Share</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ LOGIN MODAL ═══════════ -->
+<div class="overlay" id="m-login"><div class="modal"><button class="modal-x" onclick="hideModal('login')">×</button>
+  <h2>HCP Sign In</h2>
+  <p class="sub" style="color:var(--text-sec);font-size:12px;margin-bottom:16px">Login fires the <strong>login</strong> event — the key trigger for identity resolution in Data 360.</p>
+  <div class="fg"><label>Email</label><input type="email" id="l-email" placeholder="dr.smith@hospital.com"></div>
+  <div class="fg"><label>Password</label><input type="password" id="l-pw" value="demo1234"></div>
+  <button class="btn btn-accent btn-lg" style="width:100%" onclick="doLogin()">Sign In</button>
+  <p style="text-align:center;margin-top:12px;font-size:11px;color:var(--text-dim)">Don't have an account? <a style="color:var(--accent);cursor:pointer" onclick="hideModal('login');showModal('register')">Register here</a></p>
+</div></div>
+
+<!-- ═══════════ REGISTER MODAL ═══════════ -->
+<div class="overlay" id="m-register"><div class="modal"><button class="modal-x" onclick="hideModal('register')">×</button>
+  <h2>Create HCP Account</h2>
+  <p class="sub" style="color:var(--text-sec);font-size:12px;margin-bottom:16px">Registration fires a <strong>sign_up</strong> event with profile data for identity creation.</p>
+  <div class="fg-row"><div class="fg"><label>First Name</label><input id="r-fn" placeholder="Sarah"></div><div class="fg"><label>Last Name</label><input id="r-ln" placeholder="Smith"></div></div>
+  <div class="fg"><label>Email</label><input type="email" id="r-email" placeholder="dr.smith@hospital.com"></div>
+  <div class="fg"><label>Specialty</label><select id="r-spec"><option value="">Select</option><option>Oncology</option><option>Immunology</option><option>Cardiology</option><option>Neurology</option><option>Primary Care</option></select></div>
+  <div class="fg"><label>NPI Number</label><input id="r-npi" placeholder="1234567890"></div>
+  <button class="btn btn-accent btn-lg" style="width:100%" onclick="doRegister()">Create Account</button>
+</div></div>
+
+<!-- ═══════════ EVENT REGISTER MODAL ═══════════ -->
+<div class="overlay" id="m-event"><div class="modal"><button class="modal-x" onclick="hideModal('event')">×</button>
+  <h2 id="ev-title">Register for Event</h2>
+  <p class="sub" style="color:var(--text-sec);font-size:12px;margin-bottom:16px">Event registration fires a <strong>sign_up</strong> event with event details.</p>
+  <div class="fg"><label>Email</label><input type="email" id="ev-email" placeholder="dr.smith@hospital.com"></div>
+  <div class="fg"><label>Specialty</label><select id="ev-spec"><option>Oncology</option><option>Immunology</option><option>Cardiology</option><option>Neurology</option></select></div>
+  <button class="btn btn-accent btn-lg" style="width:100%" onclick="confirmEvent()">Confirm Registration</button>
+</div></div>
+
+<button id="dbg-toggle" onclick="toggleDbg()">▼ Data Layer Monitor</button>
+<div id="dbg"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="color:var(--accent);font-weight:700">📊 GA4 dataLayer — Events for Data 360 Web SDK</span><span style="color:var(--text-dim)" id="ecnt">0 events</span></div><div id="dlog"></div></div>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let user=null, eCount=0, currentItem='', lastPage='home', pageTimer=Date.now(), videoTimers={};
+
+// ═══════════════════════════════════════════
+// NAVIGATION — fires page_view
+// ═══════════════════════════════════════════
+function go(p){
+  const timeOnPage=Math.round((Date.now()-pageTimer)/1000);
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('on'));
+  document.getElementById('p-'+p).classList.add('on');
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.nav-tab').forEach(t=>{if(t.textContent.toLowerCase().includes(p)||
+    (p==='home'&&t.textContent==='Home')||(p==='library'&&t.textContent.includes('Library'))||
+    (p==='videos'&&t.textContent.includes('Video'))||(p==='tools'&&t.textContent.includes('Tools'))||
+    (p==='events'&&t.textContent.includes('Events'))||(p==='contact'&&t.textContent.includes('Contact')))t.classList.add('on')});
+  const names={home:'Home',library:'Resource Library',videos:'Video Hub',tools:'Clinical Tools',events:'Upcoming Events',contact:'Contact Representative',detail:'Resource Detail'};
+  push('page_view',{page_title:names[p]||p,page_location:location.href+'#/'+p,page_referrer:location.href+'#/'+lastPage,engagement_time_msec:timeOnPage*1000},'engage');
+  lastPage=p;pageTimer=Date.now();window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════════
+// CONTENT VIEW — fires view_item
+// ═══════════════════════════════════════════
+function viewItem(id,title,cat){
+  currentItem=id;
+  document.getElementById('d-title').textContent=title;
+  document.getElementById('d-tag').textContent=cat;
+  document.getElementById('d-tag').className='tag t-'+cat.substring(0,3).toLowerCase();
+  document.getElementById('d-body').innerHTML='<p style="color:var(--text-sec);line-height:1.9">Detailed content for <strong>'+title+'</strong> in '+cat+'. In production, this page would contain clinical trial data, prescribing information, or educational material.</p>';
+  go('detail');
+  push('view_item',{item_id:id,item_name:title,item_category:cat,content_type:'clinical_resource'},'engage');
+}
+
+// ═══════════════════════════════════════════
+// SEARCH — fires search
+// ═══════════════════════════════════════════
+function doSearch(e){
+  if(e&&e.key&&e.key!=='Enter')return;
+  const q=document.getElementById('lib-search').value;
+  if(!q)return;
+  push('search',{search_term:q},'engage');
+  toast('Search tracked: "'+q+'"');
+}
+
+// ═══════════════════════════════════════════
+// LIBRARY FILTER — fires select_content
+// ═══════════════════════════════════════════
+function filterLib(cat,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.querySelectorAll('.lib-card').forEach(c=>{c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none'});
+  push('select_content',{content_type:'filter',item_category:cat},'engage');
+}
+
+// ═══════════════════════════════════════════
+// FILE DOWNLOAD — fires file_download
+// ═══════════════════════════════════════════
+function dlFile(id){
+  push('file_download',{file_name:id+'.pdf',file_extension:'pdf',link_url:'/resources/'+id+'.pdf'},'engage');
+  toast('Download tracked: '+id+'.pdf');
+}
+
+// ═══════════════════════════════════════════
+// VIDEO — fires video_start, video_progress, video_complete
+// ═══════════════════════════════════════════
+function playVideo(id,title,cat,duration){
+  push('video_start',{video_title:title,video_provider:'MedInsight',video_url:'/videos/'+id,video_duration:duration,video_category:cat},'engage');
+  toast('Video started: '+title);
+  let elapsed=0;
+  const milestones=[25,50,75,100];let mi=0;
+  if(videoTimers[id])clearInterval(videoTimers[id]);
+  videoTimers[id]=setInterval(()=>{
+    elapsed+=1;
+    const pct=Math.min(Math.round((elapsed/Math.min(duration,15))*100),100);
+    const vidNum=id.includes('biktarvy')?1:2;
+    const pf=document.getElementById('vpf'+vidNum);
+    const vt=document.getElementById('vt'+vidNum);
+    if(pf){pf.style.width=pct+'%'}
+    if(vt){vt.textContent=elapsed+'s / simulated'}
+    if(mi<milestones.length&&pct>=milestones[mi]){
+      push('video_progress',{video_title:title,video_percent:milestones[mi],video_current_time:elapsed,video_duration:duration},'engage');
+      mi++;
+    }
+    if(pct>=100){
+      clearInterval(videoTimers[id]);
+      push('video_complete',{video_title:title,video_duration:duration},'engage');
+      toast('Video complete event fired!');
+    }
+  },1000);
+}
+
+// ═══════════════════════════════════════════
+// SAVE / BOOKMARK — fires add_to_wishlist
+// ═══════════════════════════════════════════
+function saveItem(id){
+  push('add_to_wishlist',{item_id:id,item_name:document.getElementById('d-title').textContent},'ecomm');
+  toast('Bookmark tracked!');
+}
+
+// ═══════════════════════════════════════════
+// SHARE — fires share
+// ═══════════════════════════════════════════
+function sharePage(id){
+  push('share',{method:'email',content_type:'resource',item_id:id},'engage');
+  toast('Share event tracked!');
+}
+
+// ═══════════════════════════════════════════
+// DOSING CALCULATOR — fires tool_usage
+// ═══════════════════════════════════════════
+function calcDose(){
+  const drug=document.getElementById('c-drug').value;
+  const wt=parseFloat(document.getElementById('c-wt').value);
+  const ind=document.getElementById('c-ind').value;
+  const renal=document.getElementById('c-renal').value;
+  const hep=document.getElementById('c-hepatic').value;
+  if(!drug||!wt){alert('Select drug and enter weight');return}
+  let base=wt*2,adj=1;
+  if(renal==='mild')adj=.9;if(renal==='moderate')adj=.75;if(renal==='severe')adj=.5;
+  if(hep==='Child-Pugh B')adj*=.75;if(hep==='Child-Pugh C')adj*=.5;
+  const dose=Math.round(base*adj);
+  document.getElementById('calc-dose').textContent=dose+' mg';
+  document.getElementById('calc-lbl').textContent='Every 3 weeks · '+drug+' · '+renal+' renal';
+  document.getElementById('calc-out').style.display='block';
+  push('tool_usage',{tool_name:'dosing_calculator',drug:drug,indication:ind,weight_kg:wt,renal_function:renal,hepatic_function:hep,calculated_dose_mg:dose,frequency:'q3w'},'engage');
+  toast('Calculator result tracked!');
+}
+
+function trackField(f){push('form_field_interaction',{field_name:f},'engage')}
+
+// ═══════════════════════════════════════════
+// LOGIN — fires login (CRITICAL for identity resolution)
+// ═══════════════════════════════════════════
+function doLogin(){
+  const email=document.getElementById('l-email').value;
+  if(!email){alert('Enter email');return}
+  user={email};
+  push('login',{method:'email',user_id:email},'profile');
+  push('user_properties_update',{user_id:email,login_status:'logged_in',user_type:'hcp'},'profile');
+  document.getElementById('ubadge').textContent=email;
+  document.getElementById('ubadge').style.display='inline';
+  document.getElementById('btnLogin').style.display='none';
+  document.getElementById('btnLogout').style.display='inline-block';
+  hideModal('login');
+  toast('Logged in! Identity event fired for: '+email);
+}
+
+// ═══════════════════════════════════════════
+// LOGOUT — fires logout
+// ═══════════════════════════════════════════
+function doLogout(){
+  push('logout',{user_id:user?.email},'profile');
+  user=null;
+  document.getElementById('ubadge').style.display='none';
+  document.getElementById('btnLogin').style.display='inline-block';
+  document.getElementById('btnLogout').style.display='none';
+  toast('Logged out — anonymous tracking resumed');
+}
+
+// ═══════════════════════════════════════════
+// REGISTER — fires sign_up
+// ═══════════════════════════════════════════
+function doRegister(){
+  const fn=document.getElementById('r-fn').value;
+  const ln=document.getElementById('r-ln').value;
+  const em=document.getElementById('r-email').value;
+  const sp=document.getElementById('r-spec').value;
+  const npi=document.getElementById('r-npi').value;
+  if(!em||!fn){alert('Enter name and email');return}
+  push('sign_up',{method:'email',user_id:em,first_name:fn,last_name:ln,specialty:sp,npi:npi},'profile');
+  user={email:em};
+  document.getElementById('ubadge').textContent=em;
+  document.getElementById('ubadge').style.display='inline';
+  document.getElementById('btnLogin').style.display='none';
+  document.getElementById('btnLogout').style.display='inline-block';
+  hideModal('register');
+  toast('Registration tracked! sign_up + identity events fired');
+}
+
+// ═══════════════════════════════════════════
+// EVENT REGISTRATION — fires sign_up (event type)
+// ═══════════════════════════════════════════
+let pendingEvent={};
+function registerEvent(id,title){
+  pendingEvent={id,title};
+  document.getElementById('ev-title').textContent='Register: '+title;
+  if(user)document.getElementById('ev-email').value=user.email;
+  showModal('event');
+}
+function confirmEvent(){
+  const em=document.getElementById('ev-email').value;
+  const sp=document.getElementById('ev-spec').value;
+  if(!em){alert('Enter email');return}
+  push('sign_up',{method:'event_registration',event_id:pendingEvent.id,event_name:pendingEvent.title,user_email:em,specialty:sp},'engage');
+  hideModal('event');
+  toast('Event registration tracked: '+pendingEvent.title);
+}
+
+// ═══════════════════════════════════════════
+// CONTACT FORM — fires generate_lead
+// ═══════════════════════════════════════════
+function submitContact(){
+  const d={first_name:document.getElementById('f-fn').value,last_name:document.getElementById('f-ln').value,email:document.getElementById('f-email').value,npi:document.getElementById('f-npi').value,phone:document.getElementById('f-phone').value,specialty:document.getElementById('f-spec').value,topic:document.getElementById('f-topic').value,contact_method:document.getElementById('f-method').value,notes:document.getElementById('f-notes').value};
+  if(!d.email||!d.first_name){alert('Enter name and email');return}
+  push('generate_lead',{form_name:'contact_rep_request',...d},'profile');
+  ['f-fn','f-ln','f-email','f-npi','f-phone','f-notes'].forEach(x=>document.getElementById(x).value='');
+  toast('Form submitted! generate_lead event with all fields fired');
+}
+
+// ═══════════════════════════════════════════
+// SCROLL TRACKING — fires scroll at 25/50/75/100%
+// ═══════════════════════════════════════════
+let maxScroll=0;
+window.addEventListener('scroll',()=>{
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  if(h<=0)return;
+  const pct=Math.round((window.scrollY/h)*100);
+  [25,50,75,100].forEach(m=>{if(pct>=m&&maxScroll<m){maxScroll=m;push('scroll',{percent_scrolled:m},'engage')}});
+});
+
+// ═══════════════════════════════════════════
+// CORE: dataLayer.push wrapper
+// ═══════════════════════════════════════════
+function push(name,data,type){
+  const payload={event:name,timestamp:new Date().toISOString(),...data};
+  if(user)payload.user_id=user.email;
+  dataLayer.push(payload);
+  log(name,data,type);
+}
+
+// ═══════════════════════════════════════════
+// MODALS / TOAST / DEBUG
+// ═══════════════════════════════════════════
+function showModal(n){document.getElementById('m-'+n).classList.add('on')}
+function hideModal(n){document.getElementById('m-'+n).classList.remove('on')}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),3000)}
+function toggleDbg(){const d=document.getElementById('dbg');d.classList.toggle('hide');document.getElementById('dbg-toggle').textContent=d.classList.contains('hide')?'▲ Data Layer Monitor':'▼ Data Layer Monitor'}
+
+function log(name,data,type){
+  eCount++;document.getElementById('ecnt').textContent=eCount+' events';
+  const badges={engage:'eb-engage',profile:'eb-profile',ecomm:'eb-ecomm'};
+  const labels={engage:'ENGAGEMENT',profile:'PROFILE',ecomm:'E-COMMERCE'};
+  const e=document.createElement('div');e.className='de';
+  e.innerHTML='<span class="dt">['+new Date().toLocaleTimeString()+']</span> <span class="dn">'+name+'</span> <span class="event-badge '+(badges[type]||'eb-engage')+'">'+(labels[type]||'EVENT')+'</span> <span class="dd">'+JSON.stringify(data).substring(0,180)+'</span>';
+  const dl=document.getElementById('dlog');dl.insertBefore(e,dl.firstChild);
+}
+
+// Initial page view
+push('page_view',{page_title:'Home',page_location:location.href},'engage');
+</script>
+</body>
+</html>
